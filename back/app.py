@@ -57,7 +57,6 @@
 #     app.run(debug=True)
 
 
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -88,35 +87,25 @@ def upload_audio():
     wav_path = os.path.join(UPLOAD_FOLDER, 'audio.wav')
 
     try:
-        # Save the uploaded WebM file
         audio_file.save(webm_path)
-        print(f"Saved WebM file to {webm_path}")
-
-        # Convert WebM to WAV
         audio = AudioSegment.from_file(webm_path, format="webm")
         audio.export(wav_path, format="wav")
-        print(f"Converted to WAV and saved to {wav_path}")
 
-        # Transcribe WAV using speech_recognition
         recognizer = sr.Recognizer()
         with sr.AudioFile(wav_path) as source:
             audio_data = recognizer.record(source)
             try:
                 text = recognizer.recognize_google(audio_data)
-                print(f"Transcription result: {text}")
                 return jsonify({"text": text})
             except sr.UnknownValueError:
-                print("Could not understand audio")
                 return jsonify({"error": "Unable to recognize speech"}), 400
             except sr.RequestError as e:
-                print(f"Google API error: {e}")
-                return jsonify({"error": f"Google Speech API error: {e}"}), 500
+                return jsonify({"error": f"Google API error: {e}"}), 500
 
     except Exception as e:
-        error_message = f"Error processing file: {str(e)}\n{traceback.format_exc()}"
-        print(error_message)
+        print(traceback.format_exc())
         return jsonify({"error": "Failed to process the audio file."}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # For Render deployment
+    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)

@@ -1,0 +1,4 @@
+uploads/
+*.webm
+*.wav
+__pycache__/
