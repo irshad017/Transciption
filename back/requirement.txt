@@ -1,0 +1,6 @@
+flask
+flask-cors
+speechrecognition
+scipy
+soundfile
+numpy
